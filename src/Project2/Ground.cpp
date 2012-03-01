@@ -79,13 +79,13 @@ Ground::Initialize(void)
 	// Draw the ground as a quadrilateral, specifying texture coordinates.
 	glBegin(GL_QUADS);
 	    glTexCoord2f(20.0, 20.0);
-	    glVertex3f(40.0, 40.0, 0.0);
+	    glVertex3f(160.0, 160.0, 0.0);
 	    glTexCoord2f(0.0, 20.0);
-	    glVertex3f(-40.0, 40.0, 0.0);
+	    glVertex3f(-160.0, 160.0, 0.0);
 	    glTexCoord2f(0.0, 0.0);
-	    glVertex3f(-40.0, -40.0, 0.0);
+	    glVertex3f(-160.0, -160.0, 0.0);
 	    glTexCoord2f(20.0, 0.0);
-	    glVertex3f(40.0, -40.0, 0.0);
+	    glVertex3f(160.0, -160.0, 0.0);
 	glEnd();
 
 	// Turn texturing off again, because we don't want everything else to

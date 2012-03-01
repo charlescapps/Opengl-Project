@@ -37,7 +37,9 @@ main(int argc, char *argv[])
 	printf("%f\n", FL_VERSION); 
     Fl::visual(FL_RGB);
 
-    world_window = new WorldWindow(100, 100, 800, 600, "World");
+    char* windowLabel = new char[strlen("World")+1]; 
+    strcpy(windowLabel, "World");
+    world_window = new WorldWindow(100, 100, 800, 600, windowLabel);
 
     world_window->show(argc, argv);
 

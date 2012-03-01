@@ -13,10 +13,15 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Gl_Window.H>
+#include <Fl/math.h>
+#include <Fl/gl.h>
+#include <GL/glu.h>
+#include <stdio.h>
 #include "Ground.h"
 #include "Track.h"
 #include "TentObj.h"
 #include "Tree.h"
+#include "ModelFromObj.h"
 
 
 // Subclass the Fl_Gl_Window because we want to draw OpenGL in here.
@@ -53,6 +58,8 @@ class WorldWindow : public Fl_Gl_Window {
 
 	int numTrees; //Draw some trees
 	TreeObj** someTrees; 
+
+    ModelFromObj* itsaMario; 
 
 	static const double FOV_X; // The horizontal field of view.
 

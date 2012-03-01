@@ -41,6 +41,8 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 	someTrees[3] = new TreeObj(1.2, 2, 3, 10, 10, 25, 0, 0, 0, 0, 1, 40, 12, 0.8, 0.8); 
 	someTrees[4] = new TreeObj(0.3, 5, 8, 25, 15, 35, 0, 0, 0, 0, 1, 25, 25, 1.4, 1.2); 
 
+	//Mario(double dx, double dy, double dz, double degrees, double xRotate, double yRotate, double zRotate) {
+    itsaMario = new ModelFromObj(0.0,0.0,0.0,90.0,1.0,0.0,0.0, "models/MarioBros.obj", "models/mario_fire.tga"); 
 }
 
 
@@ -106,6 +108,8 @@ WorldWindow::draw(void)
 		for (int i  = 0; i < numTrees; i++) 
 			someTrees[i]->Initialize(); 
 
+        itsaMario->Initialize(); 
+
     }
 
 
@@ -154,6 +158,8 @@ WorldWindow::draw(void)
 
 	for (int i  = 0; i < numTrees; i++) 
 		someTrees[i]->Draw();
+
+    itsaMario->Draw(); 
 }
 
 //Use derivative and train position to get train's point of view
@@ -325,6 +331,18 @@ WorldWindow::handle(int event)
 					someTrees[i] -> ReInit(); 
 				}
 				return 1; 
+            case '=':
+                for (int i = 0; i < numTrees; i++) {
+                    someTrees[i]->modifyConeStacks(1); 
+                    someTrees[i]-> ReInit(); 
+                }
+                return 1;
+            case '-':
+                for (int i = 0; i < numTrees; i++) {
+                    someTrees[i]->modifyConeStacks(-1); 
+                    someTrees[i]-> ReInit(); 
+                }
+                return 1;
 			case (FL_F + 1): 
 				cameraFollowingTrain = !cameraFollowingTrain; 
 				if (cameraFollowingTrain)

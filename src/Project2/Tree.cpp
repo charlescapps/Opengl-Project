@@ -89,7 +89,6 @@ TreeObj::Initialize(void)
     // texture by the underlying color.
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
 
-
 	setupTexDefault("tex/pine-needles.tga", leaf_tex);
 
 	// Now do the geometry. Create the display list for drawing a tent.
@@ -140,38 +139,40 @@ void TreeObj::DrawTreeTop() {
 	glBegin(GL_TRIANGLES); 
 
     double r, thetMin, thetMax, thet, thetNext, dThet, rStretch, rStretch2, ellipseLoc, zStretch, zStretch2; 
+    double h1, h2; 
 
-	for (double h = 0; h < coneH ; h+=deltaH) {
+	for (double h = 0; h < coneH; h+=deltaH) {
 		double r = (coneR/coneH)*(coneH-h); 
 		int numTris = (int) (2*PI*r/triW);
 
 		for (int i = 0; i <= numTris; i++) {
+            h1 = h+cylH;
+            h2 = (h < coneH - 3*deltaH ? h+cylH + deltaH : h+cylH + deltaH/2.0);
 			thetMin = (triW*i-triW/2)/r; 
 			thetMax = (triW*i+triW/2)/r; 
-			thet = (triW*i)/r; 
+			thet = (h < coneH - 3*deltaH ? (triW*i)/r : triW*i/(2.0*r) ); 
 			thetNext = (triW*(i+1))/r;
-			dThet = randomFloat(triW*overlap/(r*10.0), triW*overlap/r);//(h < coneH - 4*deltaH ? triW*overlap/(r*4.0) : 3.0*triW/r);
-			rStretch = randomFloat(coneR*overlap/12.0, coneR*overlap/5.0) ;//(h < coneH-4*deltaH ? randomFloat(0.0, coneR*overlap/10.0) : 0.0 );
-            rStretch2 = randomFloat(coneR*overlap/20.0, coneR*overlap/12.0) ;//(h < coneH-4*deltaH ? randomFloat(0.0, coneR*overlap/10.0) : 0.0 );
-			ellipseLoc = ellipse; //(h < coneH - 4*deltaH ? ellipse : 1.0); 
-			zStretch = randomFloat((-overlap/5.0)*coneH, (-overlap/10.0)*coneH) ; 
-			zStretch2 = randomFloat((-overlap/5.0)*coneH, (-overlap/10.0)*coneH) ; 
+			dThet = randomFloat(triW*overlap/(r*10.0), triW*overlap/(r*5.0));//(h < coneH - 4*deltaH ? triW*overlap/(r*4.0) : 3.0*triW/r);
+			rStretch = (h < 0.9*coneH ? randomFloat(coneR*overlap/10.0, coneR*overlap/4.0) : randomFloat(coneR*overlap/20.0, coneR*overlap/15.0) ) ;
+            rStretch2 = (h < 0.9*coneH - 3*deltaH ? randomFloat(coneR*overlap/20.0, coneR*overlap/6.0): randomFloat(coneR*overlap/20.0, coneR*overlap/15.0) ) ;
+			zStretch = (h < 0.9*coneH ? randomFloat((-overlap/12.0)*coneH, (-overlap/30.0)*coneH) : randomFloat((-overlap/15.0)*coneH, (-overlap/20.0)*coneH)) ; 
+			zStretch2 = (h < 0.9*coneH ? randomFloat((-overlap/10.0)*coneH, (-overlap/30.0)*coneH) : randomFloat((-overlap/15.0)*coneH, (-overlap/30.0)*coneH)) ; 
 
 			glNormal3f(deltaH*cos(thet), deltaH*sin(thet), deltaR);
 			glTexCoord2d(texCoordsX[0], texCoordsY[0]);
-			glVertex3f((rStretch+r)*ellipseLoc*cos(thetMin-dThet), (rStretch+r)*sin(thetMin - dThet), zStretch +  h+cylH); // +
+			glVertex3f((rStretch+r)*ellipse*cos(thetMin-dThet), (rStretch+r)*sin(thetMin - dThet), zStretch +  h1); // +
 			glTexCoord2d(texCoordsX[1], texCoordsY[1]);
-			glVertex3f((rStretch+r)*ellipseLoc*cos(thetMax+dThet), (rStretch+r)*sin(thetMax+dThet), zStretch + h+cylH);
+			glVertex3f((rStretch+r)*ellipse*cos(thetMax+dThet), (rStretch+r)*sin(thetMax+dThet), zStretch + h1);
 			glTexCoord2d(texCoordsX[2], texCoordsY[2]);
-			glVertex3f((r-deltaR)*ellipseLoc*cos(thet), (r-deltaR)*sin(thet), h+deltaH+cylH);
+			glVertex3f((r-deltaR)*ellipse*cos(thet), (r-deltaR)*sin(thet), h2);
 
-			if (h < coneH - 2*deltaH) { //Avoid having a upside down triangle pointing up at the top of the tree.
+			if (h < 0.95*coneH) { //Avoid having a upside down triangle pointing up at the top of the tree.
 				glTexCoord2d(texCoordsX[0], texCoordsY[0]);
-				glVertex3f((r-deltaR - rStretch2)*ellipseLoc*cos(thet+dThet), (r-deltaR - rStretch2)*sin(thet+dThet), h+deltaH+cylH);
+				glVertex3f((r-deltaR - rStretch2)*ellipse*cos(thet+dThet), (r-deltaR - rStretch2)*sin(thet+dThet), h2);
 				glTexCoord2d(texCoordsX[1], texCoordsY[1]);
-				glVertex3f((r+rStretch2)*ellipseLoc*cos(thetMax), (r+rStretch2)*sin(thetMax), zStretch2 + h+cylH);
+				glVertex3f((r+rStretch2)*ellipse*cos(thetMax), (r+rStretch2)*sin(thetMax), zStretch2 + h1);
 				glTexCoord2d(texCoordsX[2], texCoordsY[2]);
-				glVertex3f((r-deltaR-rStretch2)*ellipseLoc*cos(thetNext-dThet), (r-deltaR-rStretch2)*sin(thetNext-dThet), h+deltaH+cylH);
+				glVertex3f((r-deltaR-rStretch2)*ellipse*cos(thetNext-dThet), (r-deltaR-rStretch2)*sin(thetNext-dThet), h2);
 			}
 		}
 	}
@@ -236,20 +237,20 @@ void TreeObj::DrawTreeTopNoEffectsTexes() {
 			double thetNext = (triW*(i+1))/r;
 			glNormal3f(deltaH*cos(thet), deltaH*sin(thet), deltaR);
 			glTexCoord2d(texCoordsX[0], texCoordsY[0]);
-			glVertex3f(r*cos(thetMin), r*sin(thetMin), h+cylH); // +
+			glVertex3f(r*ellipse*cos(thetMin), r*sin(thetMin), h+cylH); // +
 			glTexCoord2d(texCoordsX[1], texCoordsY[1]);
-			glVertex3f(r*cos(thetMax), r*sin(thetMax), h+cylH);
+			glVertex3f(r*ellipse*cos(thetMax), r*sin(thetMax), h+cylH);
 			glTexCoord2d(texCoordsX[2], texCoordsY[2]);
-			glVertex3f((r-deltaR)*cos(thet), (r-deltaR)*sin(thet), h+deltaH+cylH);
+			glVertex3f((r-deltaR)*ellipse*cos(thet), (r-deltaR)*sin(thet), h+deltaH+cylH);
 
 			if (h < coneH - deltaH) { //Avoid having a upside down triangle pointing up at the top of the tree.
                 glNormal3f(deltaH*cos(thet), deltaH*sin(thet), deltaR);
                 glTexCoord2d(texCoordsX[0], texCoordsY[0]);
-				glVertex3f((r-deltaR)*cos(thet), (r-deltaR)*sin(thet), h+deltaH+cylH);
+				glVertex3f((r-deltaR)*ellipse*cos(thet), (r-deltaR)*sin(thet), h+deltaH+cylH);
                 glTexCoord2d(texCoordsX[1], texCoordsY[1]);
-				glVertex3f(r*cos(thetMax), r*sin(thetMax), h+cylH);
+				glVertex3f(r*ellipse*cos(thetMax), r*sin(thetMax), h+cylH);
                 glTexCoord2d(texCoordsX[2], texCoordsY[2]);
-				glVertex3f((r-deltaR)*cos(thetNext), (r-deltaR)*sin(thetNext), h+deltaH+cylH);
+				glVertex3f((r-deltaR)*ellipse*cos(thetNext), (r-deltaR)*sin(thetNext), h+deltaH+cylH);
 			}
 		}
 	}
@@ -264,7 +265,6 @@ TreeObj::Draw(void)
 {
 
 	glPushMatrix();
-
 	glCallList(display_list); 
 	glPopMatrix(); 
 
