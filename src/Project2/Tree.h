@@ -145,6 +145,7 @@ class TreeObj {
 	void DrawTreeBase(); 
 	void DrawTreeTop();
 	void DrawTreeTopNoEffects();
+	void DrawTreeTopNoEffectsTexes();
 
     // Initializer. Creates the display list.
     bool    Initialize(void);
