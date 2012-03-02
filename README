@@ -1,8 +1,17 @@
-Hotkeys: 
+Htkeys: 
 
 F1 - see from train's POV
 F2 - see from train looking backwards
+F3 - see to right of train
+F4 - see to left of train
 
 Home        : Toggle complex trees / basic cones
 PgUp/PgDown : Increase / Decrease number of slices in trees
 =/-         : Increase / Decrease number of stacks in trees
+
+Special thanks to kixor for use of obj parser code: 
+http://www.kixor.net/dev/objloader/
+
+Ironically, now that I understand how the file format is I could have easily 
+written a parser. 
+    Still learning about materials, though, not sure what mtl files do. 
