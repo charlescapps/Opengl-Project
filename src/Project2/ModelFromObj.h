@@ -19,7 +19,7 @@ class ModelFromObj {
 
 	double dx, dy, dz; //Translate to?
 	double degrees, xRotate, yRotate, zRotate; 
-    const double scaleFactor; 
+    double scaleFactor; 
 
     objLoader loadModel; 
     char* objFile; 
@@ -39,7 +39,7 @@ class ModelFromObj {
 
 	ModelFromObj(double dx, double dy, double dz, 
           double degrees, double xRotate, double yRotate, double zRotate, 
-          char* objFile, char* tgaFile):scaleFactor(5.0) {
+          char* objFile, char* tgaFile, double scaleFactor = 5.0){
 		display_list = 0; initialized = false; 
 		this->dx=dx;
 		this->dy=dy; 
@@ -50,8 +50,9 @@ class ModelFromObj {
 		this->zRotate=zRotate;
         this->objFile = objFile;
         this->tgaFile = tgaFile; 
+        this->scaleFactor = scaleFactor;
 
-        loadModel.load((char*)objFile); 
+        loadModel.load(objFile); 
 	}
 
     // Destructor. Frees the display lists and texture object.

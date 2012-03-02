@@ -39,7 +39,7 @@ main(int argc, char *argv[])
 
     char* windowLabel = new char[strlen("World")+1]; 
     strcpy(windowLabel, "World");
-    world_window = new WorldWindow(100, 100, 800, 600, windowLabel);
+    world_window = new WorldWindow(0, 0, 1600, 900, windowLabel);
 
     world_window->show(argc, argv);
 

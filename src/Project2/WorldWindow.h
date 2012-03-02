@@ -43,6 +43,8 @@ class WorldWindow : public Fl_Gl_Window {
 
 	float* getTrainViewLookAt(); //Gets 9 floats for gluLookAt parameters, viewpoint of train.
 	float* getBehindTrainViewLookAt();
+    float* getRightViewLookAt(); //Get the eye coordinates, center point, and up vector
+    float* getLeftViewLookAt();  //Get the eye coordinates, center point, and up vector
 
     private:
 	Ground	    ground;	    // The ground object.
@@ -52,6 +54,8 @@ class WorldWindow : public Fl_Gl_Window {
 
 	bool cameraFollowingTrain; 
 	bool cameraBehindTrain; 
+    bool cameraToRight; 
+    bool cameraToLeft; 
 
 	int numTents;  //Draw us some tents, please
 	TentObj** someTents; 
@@ -60,6 +64,7 @@ class WorldWindow : public Fl_Gl_Window {
 	TreeObj** someTrees; 
 
     ModelFromObj* itsaMario; 
+    ModelFromObj* guacamaya; 
 
 	static const double FOV_X; // The horizontal field of view.
 

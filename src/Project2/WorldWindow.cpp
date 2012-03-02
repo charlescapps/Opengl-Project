@@ -18,7 +18,7 @@ const double WorldWindow::FOV_X = 45.0;
 WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 	: Fl_Gl_Window(x, y, width, height, label), lookInFrontOfTrainBy(5.0), trainSeatHeight(0.5)
 {
-	cameraFollowingTrain = cameraBehindTrain = false; 
+	cameraFollowingTrain = cameraToRight = cameraToLeft = cameraBehindTrain = false; 
     button = -1;
 
     // Initial viewing parameters.
@@ -35,14 +35,15 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 
 	numTrees = 5;
 	someTrees = new TreeObj*[numTrees]; 
-	someTrees[0] = new TreeObj(0.8, 4, 5, 12, -25, -20, 0, 0, 0, 0, 1, 20, 20, 1.2, 1.2); 
-	someTrees[1] = new TreeObj(1.8, 6, 8, 20, 0, -25, 0, 0, 0, 0, 1, 60, 20, 1.7, 1.5); 
-	someTrees[2] = new TreeObj(1.2, 2, 3, 10, -14, -15, 0, 0, 0, 0, 1, 12, 12, 0.8, 0.8); 
+	someTrees[0] = new TreeObj(0.8, 4, 5, 12, -25, -25, 0, 0, 0, 0, 1, 20, 20, 1.2, 1.2); 
+	someTrees[1] = new TreeObj(1.8, 6, 8, 20, 0, -30, 0, 0, 0, 0, 1, 60, 20, 1.7, 1.5); 
+	someTrees[2] = new TreeObj(1.2, 2, 3, 10, -14, -20, 0, 0, 0, 0, 1, 12, 12, 0.8, 0.8); 
 	someTrees[3] = new TreeObj(1.2, 2, 3, 10, 10, 25, 0, 0, 0, 0, 1, 40, 12, 0.8, 0.8); 
 	someTrees[4] = new TreeObj(0.3, 5, 8, 25, 15, 35, 0, 0, 0, 0, 1, 25, 25, 1.4, 1.2); 
 
 	//Mario(double dx, double dy, double dz, double degrees, double xRotate, double yRotate, double zRotate) {
-    itsaMario = new ModelFromObj(0.0,0.0,0.0,90.0,1.0,0.0,0.0, "models/MarioBros.obj", "models/mario_fire.tga"); 
+    itsaMario = new ModelFromObj(-20.0,32.0,0.0,90.0,1.0,0.0,0.0, (char*)"models/MarioBros.obj", (char*)"models/mario_fire.tga"); 
+    guacamaya = new ModelFromObj(10.0,5.0,15.0,70.0,1.0,0.0,1.0, (char*)"models/Guacamaya.obj", (char*)"models/Guacamaya.tga", 10.0); 
 }
 
 
@@ -109,6 +110,7 @@ WorldWindow::draw(void)
 			someTrees[i]->Initialize(); 
 
         itsaMario->Initialize(); 
+        guacamaya->Initialize(); 
 
     }
 
@@ -139,6 +141,16 @@ WorldWindow::draw(void)
 		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
 		delete[] lookAtParams; 
 	}
+    else if (cameraToRight) {
+		float* lookAtParams = getRightViewLookAt(); 
+		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
+		delete[] lookAtParams; 
+    }
+    else if (cameraToLeft) {
+		float* lookAtParams = getLeftViewLookAt(); 
+		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
+		delete[] lookAtParams; 
+    }
 	else {
 		gluLookAt(eye[0], eye[1], eye[2], x_at, y_at, 2.0, 0.0, 0.0, 1.0);
 
@@ -160,6 +172,7 @@ WorldWindow::draw(void)
 		someTrees[i]->Draw();
 
     itsaMario->Draw(); 
+    guacamaya->Draw(); 
 }
 
 //Use derivative and train position to get train's point of view
@@ -184,6 +197,71 @@ float* WorldWindow::getTrainViewLookAt() { //Get the eye coordinates, center poi
 	lookAtParams[7] = lookAtParams[6] = 0.0;
 	delete[] derivative;
 	delete[] trainPosn; 
+	return lookAtParams;
+}
+
+//Use derivative and train position to get train's point of view
+float* WorldWindow::getLeftViewLookAt() { //Get the eye coordinates, center point, and up vector
+	float posn = traintrack.getPosn(); 
+	float* derivative = new float[3]; 
+	float* trainPosn = new float[3]; 
+	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
+	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
+	Normalize_3(derivative); 
+
+	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
+
+	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
+    float* leftDir = new float[3];
+    float* up = new float[3]; 
+    up[0] =up[1]= 0.0;
+    up[2] = 1.0; 
+
+    crossProduct(derivative, up, leftDir);
+
+	for (int i = 0; i < 3; i++) {
+		lookAtParams[i] = trainPosn[i]; //The eye is on the train.
+		lookAtParams[3+i] = trainPosn[i] + (-1)*leftDir[i]*lookInFrontOfTrainBy; //The center is in front of the train. 
+	}
+
+	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
+	lookAtParams[7] = lookAtParams[6] = 0.0;
+	delete[] derivative;
+	delete[] trainPosn; 
+    delete[] leftDir; 
+    delete[] up; 
+	return lookAtParams;
+}
+//Use derivative and train position to get train's point of view
+float* WorldWindow::getRightViewLookAt() { //Get the eye coordinates, center point, and up vector
+	float posn = traintrack.getPosn(); 
+	float* derivative = new float[3]; 
+	float* trainPosn = new float[3]; 
+	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
+	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
+	Normalize_3(derivative); 
+
+	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
+
+	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
+    float* rightDir = new float[3];
+    float* up = new float[3]; 
+    up[0] =up[1]= 0.0;
+    up[2] = 1.0; 
+
+    crossProduct(derivative, up, rightDir);
+
+	for (int i = 0; i < 3; i++) {
+		lookAtParams[i] = trainPosn[i]; //The eye is on the train.
+		lookAtParams[3+i] = trainPosn[i] + rightDir[i]*lookInFrontOfTrainBy; //The center is in front of the train. 
+	}
+
+	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
+	lookAtParams[7] = lookAtParams[6] = 0.0;
+	delete[] derivative;
+	delete[] trainPosn; 
+    delete[] rightDir; 
+    delete[] up; 
 	return lookAtParams;
 }
 
@@ -316,8 +394,10 @@ WorldWindow::handle(int event)
                redraw();
                return 1;
 			case FL_Down:
+                traintrack.modSpeed(-10.0); 
 				return 1;
 			case FL_Up:
+                traintrack.modSpeed(10.0); 
 				return 1;
 			case FL_Page_Up: 
 				for (int i = 0; i < numTrees; i++) {
@@ -346,12 +426,22 @@ WorldWindow::handle(int event)
 			case (FL_F + 1): 
 				cameraFollowingTrain = !cameraFollowingTrain; 
 				if (cameraFollowingTrain)
-					cameraBehindTrain = false;
+					cameraBehindTrain = cameraToRight = cameraToLeft = false;
 				return 1; 
 			case (FL_F + 2): 
 				cameraBehindTrain = !cameraBehindTrain; 
 				if (cameraBehindTrain)
-					cameraFollowingTrain = false;
+					cameraFollowingTrain = cameraToRight = cameraToLeft = false;
+				return 1; 
+			case (FL_F + 3): 
+				cameraToRight = !cameraToRight; 
+				if (cameraToRight)
+					cameraFollowingTrain = cameraBehindTrain = cameraToLeft = false;
+				return 1; 
+			case (FL_F + 4): 
+				cameraToLeft = !cameraToLeft; 
+				if (cameraToLeft)
+					cameraFollowingTrain = cameraBehindTrain = cameraToRight = false;
 				return 1; 
 			case FL_Home: 
 				for (int i = 0; i < numTrees; i++)

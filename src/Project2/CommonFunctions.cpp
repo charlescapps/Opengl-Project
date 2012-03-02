@@ -46,3 +46,9 @@ GLuint setupTexDefault(const char* filename, GLuint & texValue) {
 
 	return texValue; 
 }
+
+void crossProduct(float* v1, float* v2, float* output) {
+   output[0] = v1[1]*v2[2] - v1[2]*v2[1];  
+   output[1] = v1[2]*v2[0] - v1[0]*v2[2];  
+   output[2] = v1[0]*v2[1] - v1[1]*v2[0];  
+}

@@ -15,4 +15,6 @@ float randomFloat(float lower, float upper);
 
 GLuint setupTexDefault(const char* filename, GLuint & texValue);
 
+void crossProduct(float* v1, float* v2, float* output);
+
 #endif

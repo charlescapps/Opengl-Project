@@ -16,9 +16,10 @@ const float Track::TRACK_CONTROLS[TRACK_NUM_CONTROLS][3] =
 		{ { -20.0, -20.0, -18.0 }, { 20.0, -20.0, 40.0 },
 		  { 20.0, 20.0, -18.0 }, { -20.0, 20.0, 40.0 } };
 
-// The carriage energy and mass
-const float Track::TRAIN_ENERGY = 250.0f;
 
+void Track::modSpeed(double dEnergy) {
+    TRAIN_ENERGY = MAX(0.0, TRAIN_ENERGY+dEnergy); 
+}
 
 // Normalize a 3d vector.
 void

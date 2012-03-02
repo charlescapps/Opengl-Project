@@ -10,6 +10,7 @@
 
 #include <Fl/gl.h>
 #include "CubicBspline.h"
+#include "CommonFunctions.h"
 
 void
 Normalize_3(float v[3]);
@@ -26,11 +27,12 @@ class Track {
 
     static const int	TRACK_NUM_CONTROLS;	// Constants about the track.
     static const float 	TRACK_CONTROLS[][3];
-    static const float 	TRAIN_ENERGY;
+    float 	TRAIN_ENERGY;
 
   public:
     // Constructor
-    Track(void) { initialized = false; posn_on_track = 0.0f; speed = 0.0f; };
+    Track(void) { initialized = false; posn_on_track = 0.0f; speed = 0.0f; 
+        TRAIN_ENERGY=250.0f;}
 
     // Destructor
     ~Track(void);
@@ -38,6 +40,7 @@ class Track {
     bool    Initialize(void);	// Gets everything set up for drawing.
     void    Update(float);	// Updates the location of the train
     void    Draw(void);		// Draws everything.
+    void    modSpeed(double); 
 
 	CubicBspline* getSpline() {return track;}
 	float getPosn() {return posn_on_track;}
