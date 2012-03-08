@@ -43,7 +43,9 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 
 	//Mario(double dx, double dy, double dz, double degrees, double xRotate, double yRotate, double zRotate) {
     itsaMario = new ModelFromObj(-20.0,32.0,0.0,90.0,1.0,0.0,0.0, (char*)"models/MarioBros.obj", (char*)"models/mario_fire.tga"); 
-    guacamaya = new ModelFromObj(10.0,5.0,15.0,70.0,1.0,0.0,1.0, (char*)"models/Guacamaya.obj", (char*)"models/Guacamaya.tga", 10.0); 
+    guacamaya = new ModelFromObj(10.0,5.0,25.0,70.0,1.0,0.0,1.0, (char*)"models/Guacamaya.obj", (char*)"models/Guacamaya.tga", 5.0); 
+
+    dancingRobot = new Robot; 
 }
 
 
@@ -111,10 +113,8 @@ WorldWindow::draw(void)
 
         itsaMario->Initialize(); 
         guacamaya->Initialize(); 
-
+        dancingRobot->Initialize();
     }
-
-
 
     // Stuff out here relies on a coordinate system or must be done on every
     // frame.
@@ -153,7 +153,6 @@ WorldWindow::draw(void)
     }
 	else {
 		gluLookAt(eye[0], eye[1], eye[2], x_at, y_at, 2.0, 0.0, 0.0, 1.0);
-
 	}
     // Position the light source. This has to happen after the viewing
     // transformation is set up, so that the light stays fixed in world
@@ -173,6 +172,7 @@ WorldWindow::draw(void)
 
     itsaMario->Draw(); 
     guacamaya->Draw(); 
+    dancingRobot->draw();
 }
 
 //Use derivative and train position to get train's point of view
@@ -447,6 +447,18 @@ WorldWindow::handle(int event)
 				for (int i = 0; i < numTrees; i++)
 					someTrees[i]->toggleEffects(); 
 				return 1; 
+            case 'w':
+                dancingRobot->walk(0.1); 
+                return 1; 
+            case 's':
+                dancingRobot->walk(-0.1); 
+                return 1; 
+            case 'a':
+                dancingRobot->turn(2.0); 
+                return 1; 
+            case 'd':
+                dancingRobot->turn(-2.0); 
+                return 1; 
          }
     }
 

@@ -22,6 +22,7 @@
 #include "TentObj.h"
 #include "Tree.h"
 #include "ModelFromObj.h"
+#include "robot/Robot.h"
 
 
 // Subclass the Fl_Gl_Window because we want to draw OpenGL in here.
@@ -65,6 +66,8 @@ class WorldWindow : public Fl_Gl_Window {
 
     ModelFromObj* itsaMario; 
     ModelFromObj* guacamaya; 
+
+    Robot* dancingRobot; 
 
 	static const double FOV_X; // The horizontal field of view.
 

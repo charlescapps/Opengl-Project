@@ -52,3 +52,53 @@ void crossProduct(float* v1, float* v2, float* output) {
    output[1] = v1[2]*v2[0] - v1[0]*v2[2];  
    output[2] = v1[0]*v2[1] - v1[1]*v2[0];  
 }
+double degreesToRad(double deg) {
+    return deg*PI/180.0; 
+}
+
+void normalize3f(double* v) {
+    double mag = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); 
+    v[0] = v[0]/mag; 
+    v[1] = v[1]/mag; 
+    v[2] = v[2]/mag; 
+}
+
+void drawRectPrism(double w, double h, double l) {
+    glBegin(GL_QUADS); 
+        glNormal3f(0.0,0.0,-1.0); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,0.0); 
+
+        glNormal3f(0.0,0.0,1.0); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,l); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,l); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,l); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,l); 
+
+        glNormal3f(-1.0,0.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,l); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,l); 
+
+        glNormal3f(1.0,0.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,l); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,l); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,0.0); 
+
+        glNormal3f(0.0,-1.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,0.0); 
+       glVertex3f(0.0+w/2.0, 0.0-h/2.0,l); 
+       glVertex3f(0.0-w/2.0, 0.0-h/2.0,l); 
+
+        glNormal3f(0.0,1.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,l); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,l); 
+       glVertex3f(0.0+w/2.0, 0.0+h/2.0,0.0); 
+       glVertex3f(0.0-w/2.0, 0.0+h/2.0,0.0); 
+    glEnd();
+}

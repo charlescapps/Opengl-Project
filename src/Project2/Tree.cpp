@@ -39,12 +39,9 @@ void TreeObj::ReInit(void) {
 		DrawTreeBase(); 
 		DrawTreeTopNoEffects();
 	}
-	
 
 	glEndList();
-
 }
-
 
 bool
 TreeObj::Initialize(void)
@@ -103,7 +100,6 @@ TreeObj::Initialize(void)
 	DrawTreeTop();
     DrawTreeTopNoEffectsTexes(); 
 	
-
 	glEndList();
  
     // We only do all this stuff once, when the GL context is first set up.
@@ -260,14 +256,11 @@ void TreeObj::DrawTreeTopNoEffectsTexes() {
 }
 
 // Draw just calls the display list we set up earlier.
-void
-TreeObj::Draw(void)
+void TreeObj::Draw(void)
 {
-
 	glPushMatrix();
 	glCallList(display_list); 
 	glPopMatrix(); 
-
 }
 
 

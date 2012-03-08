@@ -8,6 +8,8 @@ F4 - see to left of train
 Home        : Toggle complex trees / basic cones
 PgUp/PgDown : Increase / Decrease number of slices in trees
 =/-         : Increase / Decrease number of stacks in trees
+w/s         : Move robot forward / backward
+a/d         : Turn robot left / right
 
 Special thanks to kixor for use of obj parser code: 
 http://www.kixor.net/dev/objloader/

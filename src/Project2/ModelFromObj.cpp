@@ -21,12 +21,12 @@ void ModelFromObj::DrawModelFromObj(void) {
             int v = loadModel.faceList[i] -> vertex_index[j]; 
             int t = loadModel.faceList[i] -> texture_index[j]; 
             int n = loadModel.faceList[i] -> normal_index[j]; 
-            if (t < loadModel.textureCount && t >= 0 && loadModel.textureList[t] != NULL) {
-                glTexCoord2d(loadModel.textureList[t]->e[0],loadModel.textureList[t]->e[1]);
-            }
             if (n < loadModel.normalCount && n>= 0 && loadModel.normalList[n] != NULL) {
                 printf("Found normal: %d: %lf, %lf, %lf\n", n, loadModel.normalList[n]->e[0], loadModel.normalList[n]->e[1],loadModel.normalList[n]->e[2]); 
                 glNormal3f(loadModel.normalList[n]->e[0], loadModel.normalList[n]->e[1],loadModel.normalList[n]->e[2]); 
+            }
+            if (t < loadModel.textureCount && t >= 0 && loadModel.textureList[t] != NULL) {
+                glTexCoord2d(loadModel.textureList[t]->e[0],loadModel.textureList[t]->e[1]);
             }
             glVertex3f(scaleFactor*(loadModel.vertexList[v]->e[0]),scaleFactor*(loadModel.vertexList[v]->e[1]),scaleFactor*(loadModel.vertexList[v]->e[2]));
         }
