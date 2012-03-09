@@ -6,15 +6,16 @@
 
 #include "TentObj.h"
 
+bool TentObj::texturesLoaded = false;
+GLuint TentObj::ground_tex = 1;
+GLuint TentObj::tent_tex = 1;
 
 // Destructor
 TentObj::~TentObj(void)
 {
     if ( initialized )
     {
-	glDeleteLists(display_list, 1);
-	glDeleteTextures(1, &ground_tex);
-	glDeleteTextures(1, &tent_tex);
+        glDeleteLists(display_list, 1);
     }
 }
 
@@ -23,96 +24,22 @@ TentObj::~TentObj(void)
 bool
 TentObj::Initialize(void)
 {
-		/*printf("OPENGL VERSION: '%s'\n", glGetString(GL_VERSION));
-		printf("OPENGL RENDERER: '%s'\n", glGetString(GL_RENDERER));
-		printf("OPENGL VENDOR: '%s'\n", glGetString(GL_VENDOR));
-		printf("OPENGL EXTENSIONS: '%s'\n", glGetString(GL_EXTENSIONS));*/
 
-    ubyte   *image_data;
-    int	    image_height, image_width;
-
-	/***************LOAD THE GROUND TEXTURE (WALNUT.TGA)****************/
-    // Load the image for the texture. The texture file has to be in
-    // a place where it will be found.
-  if ( ! ( image_data = (ubyte*)tga_load("tex/walnut.tga", &image_width,
-					   &image_height, TGA_TRUECOLOR_24) ) )
-    {
-	fprintf(stderr, "TentObj::Initialize: Couldn't load grass.tga\n");
-	return false;
+    if (!TentObj::texturesLoaded) {
+        setupTexDefault("tex/walnut.tga", TentObj::ground_tex);
+        setupTexDefault("tex/leopard.tga", TentObj::tent_tex);
+        TentObj::texturesLoaded = true; 
     }
-
-    // This creates a texture object and binds it, so the next few operations
-    // apply to this texture.
-    glGenTextures(1, &ground_tex);
-    glBindTexture(GL_TEXTURE_2D, ground_tex);
-
-    // This sets a parameter for how the texture is loaded and interpreted.
-    // basically, it says that the data is packed tightly in the image array.
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // This sets up the texture with high quality filtering. First it builds
-    // mipmaps from the image data, then it sets the filtering parameters
-    // and the wrapping parameters. We want the grass to be repeated over the
-    // TentObj.
-    gluBuild2DMipmaps(GL_TEXTURE_2D,3, image_width, image_height, 
-		      GL_RGB, GL_UNSIGNED_BYTE, image_data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		    GL_NEAREST_MIPMAP_LINEAR);
-
-    // This says what to do with the texture. Modulate will multiply the
-    // texture by the underlying color.
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
-
-	//********************LOAD THE TENT TEXTURE*************************
-	    // Load the image for the texture. The texture file has to be in
-    // a place where it will be found.
-  if ( ! ( image_data = (ubyte*)tga_load("tex/leopard.tga", &image_width,
-					   &image_height, TGA_TRUECOLOR_24) ) )
-    {
-	fprintf(stderr, "TentObj::Initialize: Couldn't load grass.tga\n");
-	return false;
-    }
-
-    // This creates a texture object and binds it, so the next few operations
-    // apply to this texture.
-    glGenTextures(1, &tent_tex);
-    glBindTexture(GL_TEXTURE_2D, tent_tex);
-
-    // This sets a parameter for how the texture is loaded and interpreted.
-    // basically, it says that the data is packed tightly in the image array.
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // This sets up the texture with high quality filtering. First it builds
-    // mipmaps from the image data, then it sets the filtering parameters
-    // and the wrapping parameters. We want the grass to be repeated over the
-    // TentObj.
-    gluBuild2DMipmaps(GL_TEXTURE_2D,3, image_width, image_height, 
-		      GL_RGB, GL_UNSIGNED_BYTE, image_data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		    GL_NEAREST_MIPMAP_LINEAR);
-
-    // This says what to do with the texture. Modulate will multiply the
-    // texture by the underlying color.
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
 
 	// Now do the geometry. Create the display list for drawing a tent.
-    display_list = glGenLists(2);
-    glNewList(display_list, GL_COMPILE);
+    display_list = glGenLists(1);
 
-	glNewList(display_list, GL_COMPILE);
+    glNewList(display_list, GL_COMPILE);
 
 	DrawTent();
 
 	glEndList();
  
-	//doFog(); 
-
     // We only do all this stuff once, when the GL context is first set up.
     initialized = true;
 
@@ -129,7 +56,6 @@ void TentObj::DrawTent() {
 
 	//Bottom of tent
 	glBegin(GL_QUADS); 
-		
 		glTexCoord2d(0,0);glVertex3f(0.,0.,0.); 
 		glTexCoord2d(1.0,0);glVertex3f(l,0.,0.);
 		glTexCoord2d(1,1);glVertex3f(l,w,0.); 

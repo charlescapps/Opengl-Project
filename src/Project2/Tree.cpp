@@ -6,15 +6,17 @@
 
 #include "Tree.h"
 
+bool TreeObj::texturesLoaded = false; 
+GLuint TreeObj::wood_tex = 1; 
+GLuint TreeObj::leaf_tex = 1; 
 
 // Destructor
 TreeObj::~TreeObj(void)
 {
     if ( initialized )
     {
-	glDeleteLists(display_list, 1);
-	glDeleteTextures(1, &wood_tex);
-	glDeleteTextures(1, &leaf_tex);
+        glDeleteLists(display_list, 1);
+      //  gluDeleteQuadratic(cylQuad); 
 	
     }
 }
@@ -43,50 +45,15 @@ void TreeObj::ReInit(void) {
 	glEndList();
 }
 
-bool
-TreeObj::Initialize(void)
+bool TreeObj::Initialize(void)
 {
 	cylQuad = gluNewQuadric(); 
 
-    ubyte   *image_data;
-    int	    image_height, image_width;
-
-	/***************LOAD THE GROUND TEXTURE (WALNUT.TGA)****************/
-    // Load the image for the texture. The texture file has to be in
-    // a place where it will be found.
-  if ( ! ( image_data = (ubyte*)tga_load("tex/walnut.tga", &image_width,
-					   &image_height, TGA_TRUECOLOR_24) ) )
-    {
-	fprintf(stderr, "TreeObj::Initialize: Couldn't load walnut.tga\n");
-	return false;
+    if (!TreeObj::texturesLoaded) {
+        setupTexDefault("tex/walnut.tga", TreeObj::wood_tex);
+        setupTexDefault("tex/pine-needles.tga", TreeObj::leaf_tex);
+        TreeObj::texturesLoaded = true; 
     }
-
-    // This creates a texture object and binds it, so the next few operations
-    // apply to this texture.
-    glGenTextures(1, &wood_tex);
-    glBindTexture(GL_TEXTURE_2D, wood_tex);
-
-    // This sets a parameter for how the texture is loaded and interpreted.
-    // basically, it says that the data is packed tightly in the image array.
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    // This sets up the texture with high quality filtering. First it builds
-    // mipmaps from the image data, then it sets the filtering parameters
-    // and the wrapping parameters. We want the grass to be repeated over the
-    // TreeObj.
-    gluBuild2DMipmaps(GL_TEXTURE_2D,3, image_width, image_height, 
-		      GL_RGB, GL_UNSIGNED_BYTE, image_data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		    GL_NEAREST_MIPMAP_LINEAR);
-
-    // This says what to do with the texture. Modulate will multiply the
-    // texture by the underlying color.
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
-
-	setupTexDefault("tex/pine-needles.tga", leaf_tex);
 
 	// Now do the geometry. Create the display list for drawing a tent.
     display_list = glGenLists(1);
@@ -112,7 +79,7 @@ void TreeObj::DrawTreeBase() {
 
 	// Turn on texturing and bind the walnut texture for the ground.
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, wood_tex);
+	glBindTexture(GL_TEXTURE_2D, TreeObj::wood_tex);
 
 	glColor3f(1.0,1.0,1.0); //White since texture has colors
 

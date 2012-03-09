@@ -65,6 +65,9 @@ void Robot::initDefaults(void) {
     initialized = false;
 
     headTheta = 0.0; 
+    isJumping = isWalking = false; 
+    jumpProgress = walkProgress = forwardSpeed = 0.0;
+    dir = true; 
 
     frontDir = new double[3];
     frontDir[0] = frontDir[2] = 0.0; 
@@ -104,21 +107,40 @@ void Robot::initDefaults(void) {
     rotateLeftArm[3]=-0.3; 
     rotateRightArm[3]=0.3;
 
-    rotateHead[0] = rotateHead[1] = rotateHead[2] = rotateHead[3] = 0.0;
+    rotateHead[0] = rotateHead[1] = rotateHead[2] = 0.0;
+    rotateHead[3] = 1.0;
     transHead[0] = transHead[1] = 0.0; 
 
     normalize3f(rotateLeftArm+1); 
     normalize3f(rotateRightArm+1); 
 
-    rotateBody[0] = rotateBody[1] = rotateBody[2] = rotateBody[3] = 0.0; 
+    rotateBody[0] = rotateBody[1] = rotateBody[2] = 0.0;
+    rotateBody[3] = 1.0; 
     transBody[0] = transBody[1] = 0.0; 
 }
 
 // Destructor
 Robot::~Robot(void)
 {
-    if (initialized)
-        glDeleteLists(display_list, 1);
+    delete[] transAll; 
+    delete[] rotateAll; 
+    delete leftLeg;
+    delete rightLeg; 
+    delete leftArm;
+    delete rightArm; 
+    delete body;
+    delete head; 
+
+    delete[] rotateLeftLeg;
+    delete[] transLeftLeg; 
+    delete[] rotateRightLeg;
+    delete[] transRightLeg; 
+    delete[] rotateBody; 
+    delete[] transBody; 
+    delete[] rotateHead; 
+    delete[] transHead; 
+
+    delete[] frontDir; 
 }
 
 // Initializer. Returns false if something went wrong, like not being able to
@@ -126,9 +148,6 @@ Robot::~Robot(void)
 
 bool Robot::Initialize(void)
 {
-    if (!initialized) {
-        display_list = glGenLists(1);
-    }
 
     leftLeg -> Initialize();
     rightLeg -> Initialize();
@@ -137,13 +156,6 @@ bool Robot::Initialize(void)
     body -> Initialize();
     head -> Initialize(); 
 
-	// Now do the geometry. Create the display list for drawing a robot
-	//glNewList(display_list, GL_COMPILE);
-
-
-	//glEndList();
- 
-    // We only do all this stuff once, when the GL context is first set up.
     initialized = true;
 
     return true;
@@ -199,7 +211,72 @@ void Robot::draw() {
 
 }
 
-void Robot::walk(double inc) {
+void Robot::turnHead(double dTheta) {
+    rotateHead[0] += dTheta; 
+    if (rotateHead[0] > headTurnMax)
+        rotateHead[0] = headTurnMax; 
+    else if (rotateHead[0] < -headTurnMax)
+        rotateHead[0] = -headTurnMax; 
+}
+
+void Robot::turnBody(double dTheta) {
+    rotateBody[0] += dTheta; 
+    if (rotateBody[0] > bodyTurnMax) {
+        rotateBody[0] = bodyTurnMax; 
+    }
+    else if (rotateBody[0] < -bodyTurnMax) {
+        rotateBody[0] = -bodyTurnMax; 
+    }
+}
+
+void Robot::setDir(bool newDir) {
+    dir = newDir; 
+}
+
+void Robot::incSpeed(double inc) {
+    forwardSpeed += inc; 
+
+    if (forwardSpeed > maxForwardSpeed)
+        forwardSpeed = maxForwardSpeed; 
+    else if (forwardSpeed < -maxForwardSpeed)
+        forwardSpeed = -maxForwardSpeed; 
+}
+
+void Robot::accelWalk(double dt) {
+    incSpeed((dir==false ? -1.0 : 1.0)*dt*walkAccel); 
+}
+
+void Robot::setWalking(bool toWalk) {
+    isWalking = toWalk;
+
+    if (toWalk == false) {
+        forwardSpeed = 0.0;
+    }
+}
+
+void Robot::setJumping(bool toJump) {
+    if (isJumping == false && toJump == true) {
+        isJumping = true; 
+        jumpProgress = 0.0; 
+        jumpSpeed = initialJumpSpeed; 
+    }
+}
+
+void Robot::updateJump(double dt) {
+
+    if (isJumping) {
+        jumpSpeed -= G*dt;   
+        
+        if (transAll[2] < 0.0) {
+            transAll[2] = 0.0; 
+            isJumping = false; 
+            jumpSpeed = 0.0; 
+        }
+    }
+
+}
+
+void Robot::updateWalk(double inc) {
     walkProgress += inc; 
 
     if (walkProgress >=1.0) {
@@ -234,14 +311,37 @@ void Robot::walk(double inc) {
         rightArm -> rotateWalk(-armMaxAngle*(1.0-walkProgress)*4.0); 
     }
 
-    transAll[0] += frontDir[0]*walkMoveInc*inc; 
+/*    transAll[0] += frontDir[0]*walkMoveInc*inc; 
     transAll[1] += frontDir[1]*walkMoveInc*inc; 
-    transAll[2] += frontDir[2]*walkMoveInc*inc; 
+    transAll[2] += frontDir[2]*walkMoveInc*inc; */
 
 }
 
 void Robot::turn(double dTheta) {
     rotateAll[0] += dTheta;
+    updateFrontDir(); 
+}
+
+void Robot::updateMotion(double dt) {
+
+    transAll[0] += frontDir[0]*forwardSpeed*dt; 
+    transAll[1] += frontDir[1]*forwardSpeed*dt; 
+    transAll[2] += frontDir[2]*forwardSpeed*dt; 
+
+    transAll[2] += jumpSpeed*dt; 
+
+    double timeForWalkCycle = walkMoveInc/forwardSpeed; 
+
+    if (isWalking && !isJumping) {
+        updateWalk(dt/timeForWalkCycle); 
+        accelWalk(dt); 
+    }
+    if (isJumping) {
+        updateJump(dt); 
+    }
+}
+
+void Robot::updateFrontDir() {
     double x = rotateAll[1]; 
     double y = rotateAll[2]; 
     double z = rotateAll[3];
@@ -251,6 +351,4 @@ void Robot::turn(double dTheta) {
     frontDir[1] = y*y*(1-c)+c; 
     frontDir[2] = y*z*(1-c)+x*s; 
     normalize3f(frontDir); 
-
-
 }

@@ -35,6 +35,8 @@ class WorldWindow : public Fl_Gl_Window {
 	// otherwise needs to be redrawn.
 	void	draw(void);
 
+    void zoomOut(); //Zoom out one level
+
 	// Event handling method. Uses only mouse events.
 	int	handle(int);
 

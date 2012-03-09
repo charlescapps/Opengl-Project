@@ -27,7 +27,14 @@ const double bodyDimDefault[] = {6.0,5.0,8.0};
 const double headDimDefault[] = {3.0,3.0,3.0};
 const double legMaxAngle = 45.0; //Max angle of legs when walking
 const double armMaxAngle = 60.0; //Max angle of arms when walking
-const double walkMoveInc = 5.0; //Amount to move forward by in one walk cycle
+const double headTurnMax = 45.0;
+const double bodyTurnMax = 20.0;
+
+const double walkAccel = 20.0; 
+const double walkMoveInc = 10.0; //Amount to move forward by in one walk cycle
+const double maxForwardSpeed = 48.0;
+
+const double initialJumpSpeed = 30.0; 
 
 class Robot {
   private:
@@ -69,24 +76,44 @@ class Robot {
     //State of operations
     //0 <= walkProgress < 0.5 means legs going one way, 
     //0.5 <= walkProgress < 1.0 means legs going back the other way
+    bool isWalking; 
+    bool dir; 
     double walkProgress;
+    double forwardSpeed; 
+
+    bool isJumping; 
+    double jumpProgress; 
+    double jumpSpeed; 
 
   public:
     // Constructor. Can't do initialization here because we are
     // created before the OpenGL context is set up.
 
     Robot();
-    Robot(double* legDim, double* armDim, double* bodyDim, double* headDim);
     ~Robot(void);
+    Robot(double* legDim, double* armDim, double* bodyDim, double* headDim);
 
     void initDefaults(void);
 
     bool Initialize(void);
 	void draw();
 
+    void updateFrontDir(); 
+
     //A full walk takes place from 0.0 -> 1.0
-    void walk(double inc = 0.05);
     void turn(double dTheta = 4.0); 
+    void turnHead(double dTheta = 4.0); 
+    void turnBody(double dTheta = 4.0); 
+
+    void incSpeed(double inc); 
+    void accelWalk(double dt); 
+    void setWalking(bool toWalk); 
+    void setJumping(bool toJump); 
+    void updateMotion(double dt); 
+    void updateJump(double inc = 0.1); 
+    void updateWalk(double inc = 0.05);
+
+    void setDir(bool newDir); 
 };
 
 

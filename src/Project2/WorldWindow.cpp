@@ -349,17 +349,18 @@ WorldWindow::Update(float dt)
 
     // Animate the train.
     traintrack.Update(dt);
+    dancingRobot->updateMotion(dt); 
 
     return true;
 }
 
 
-int
-WorldWindow::handle(int event)
+int WorldWindow::handle(int event)
 {
     // Event handling routine. Only looks at mouse events.
     // Stores a bunch of values when the mouse goes down and keeps track
     // of where the mouse is and what mouse button is down, if any.
+    int key = Fl::event_key();
     switch ( event )
     {
 	  case FL_FOCUS:
@@ -382,14 +383,22 @@ WorldWindow::handle(int event)
       case FL_RELEASE:
         button = -1;
 		return 1;
+      case FL_KEYUP: 
+        switch(key) {
+            case 'w':
+                dancingRobot->setWalking(false); 
+                return 1; 
+            case 's':
+                dancingRobot->setWalking(false); 
+                return 1; 
+        }
+        return 1; 
 	  case FL_KEYBOARD:
-        int key = Fl::event_key();
         switch (key)
          {
             case FL_Left:
                redraw();
                return 1;
-
             case FL_Right:
                redraw();
                return 1;
@@ -448,17 +457,30 @@ WorldWindow::handle(int event)
 					someTrees[i]->toggleEffects(); 
 				return 1; 
             case 'w':
-                dancingRobot->walk(0.1); 
+                dancingRobot->setWalking(true); 
+                dancingRobot->setDir(true); 
+        //        dancingRobot->incSpeed(0.8);  
                 return 1; 
             case 's':
-                dancingRobot->walk(-0.1); 
+                dancingRobot->setWalking(true);
+                dancingRobot->setDir(false); 
+      //          dancingRobot->incSpeed(-0.4);  
                 return 1; 
             case 'a':
-                dancingRobot->turn(2.0); 
+                dancingRobot->turn(4.0); 
                 return 1; 
             case 'd':
-                dancingRobot->turn(-2.0); 
+                dancingRobot->turn(-4.0); 
                 return 1; 
+            case 'q':
+                dancingRobot->turnBody(2.0); 
+                return 1; 
+            case 'e':
+                dancingRobot->turnBody(-2.0); 
+                return 1; 
+            case ' ':
+                dancingRobot->setJumping(true); 
+                return 1;
          }
     }
 

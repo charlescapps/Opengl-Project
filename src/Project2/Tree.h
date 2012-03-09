@@ -9,9 +9,9 @@
 #define _TREE_H_
 
 #include <Fl/gl.h>
+#include <GL/glu.h>
 #include "libtarga.h"
 #include <stdio.h>
-#include <GL/glu.h>
 #include "math.h"
 #include "CommonFunctions.h"
 
@@ -19,8 +19,9 @@
 class TreeObj {
   private:
     GLubyte display_list;   // The display list that does all the work.
-    GLuint  wood_tex;    // texture for the base of the tree
-	GLuint  leaf_tex;    //texture for leaves/pines
+    static bool texturesLoaded; 
+    static GLuint  wood_tex;    // texture for the base of the tree
+	static GLuint  leaf_tex;    //texture for leaves/pines
 
     bool    initialized;    // Whether or not we have been initialised.
 

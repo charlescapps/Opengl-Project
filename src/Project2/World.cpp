@@ -18,8 +18,7 @@ static WorldWindow  *world_window; // The window with world view in it
 // This callback is called every 40th of a second if the system is fast
 // enough. You should change the variable FRAME_TIME defined above if you
 // want to change the frame rate.
-static void
-Timeout_Callback(void *data)
+static void Timeout_Callback(void *data)
 {
     // Update the motion in the world. This both moves the view and
     // animates the train.
@@ -31,10 +30,9 @@ Timeout_Callback(void *data)
 }
 
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	printf("%f\n", FL_VERSION); 
+	printf("FLTK Version: %f\n", FL_VERSION); 
     Fl::visual(FL_RGB);
 
     char* windowLabel = new char[strlen("World")+1]; 
@@ -44,8 +42,6 @@ main(int argc, char *argv[])
     world_window->show(argc, argv);
 
     Fl::add_timeout(0.0, Timeout_Callback, NULL);
-
-
 
     return Fl::run();
 }

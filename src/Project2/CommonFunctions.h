@@ -13,6 +13,7 @@
 #define MAX(x,y) ((x < y) ? (y) : (x))
 
 const double PI = (4.0*atan(1.0));
+const double G = 48.0; 
 
 float randomFloat(float lower, float upper);
 

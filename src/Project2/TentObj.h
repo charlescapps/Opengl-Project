@@ -9,15 +9,18 @@
 #define _TENT_H_
 
 #include <Fl/gl.h>
+#include <GL/glu.h>
 #include "libtarga.h"
 #include <stdio.h>
-#include <GL/glu.h>
+
+#include "CommonFunctions.h"
 
 class TentObj {
   private:
     GLubyte display_list;   // The display list that does all the work.
-    GLuint  ground_tex;    // The object for the bottom of the tent
-	GLuint  tent_tex; //texture for sides of tent
+    static bool texturesLoaded;
+    static GLuint  ground_tex;    // The object for the bottom of the tent
+	static GLuint  tent_tex; //texture for sides of tent
     bool    initialized;    // Whether or not we have been initialised.
 
 	double w, h, l; //Geometry of the tent
