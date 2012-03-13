@@ -9,6 +9,7 @@
 #define _GROUND_H_
 
 #include <Fl/gl.h>
+#include "CommonFunctions.h"
 
 class Ground {
   private:
@@ -19,7 +20,7 @@ class Ground {
   public:
     // Constructor. Can't do initialization here because we are
     // created before the OpenGL context is set up.
-    Ground(void) { display_list = 0; initialized = false; };
+    Ground(void) { display_list = 0; initialized = false; texture_obj=0; };
 
     // Destructor. Frees the display lists and texture object.
     ~Ground(void);

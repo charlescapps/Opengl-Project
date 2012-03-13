@@ -44,6 +44,8 @@ GLuint setupTexDefault(const char* filename, GLuint & texValue) {
     // texture by the underlying color.
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
 
+    delete[] image_data;
+
 	return texValue; 
 }
 

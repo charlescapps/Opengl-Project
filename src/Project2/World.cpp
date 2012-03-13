@@ -33,6 +33,8 @@ static void Timeout_Callback(void *data)
 int main(int argc, char *argv[])
 {
 	printf("FLTK Version: %f\n", FL_VERSION); 
+    srand(time(NULL)); 
+
     Fl::visual(FL_RGB);
 
     char* windowLabel = new char[strlen("World")+1]; 

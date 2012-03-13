@@ -135,6 +135,10 @@ Robot::~Robot(void)
     delete[] transLeftLeg; 
     delete[] rotateRightLeg;
     delete[] transRightLeg; 
+    delete[] rotateLeftArm; 
+    delete[] transLeftArm; 
+    delete[] rotateRightArm; 
+    delete[] transRightArm; 
     delete[] rotateBody; 
     delete[] transBody; 
     delete[] rotateHead; 
@@ -264,14 +268,40 @@ void Robot::setJumping(bool toJump) {
 
 void Robot::updateJump(double dt) {
 
-    if (isJumping) {
-        jumpSpeed -= G*dt;   
-        
-        if (transAll[2] < 0.0) {
-            transAll[2] = 0.0; 
-            isJumping = false; 
-            jumpSpeed = 0.0; 
-        }
+    if (!isJumping)
+        return;
+
+    jumpSpeed -= G*dt;   
+    
+    if (transAll[2] < 0.0) {
+        transAll[2] = 0.0; 
+        isJumping = false; 
+        jumpSpeed = 0.0; 
+        jumpProgress = 0.0; 
+        updateWalk(0.0); 
+        return; 
+    }
+
+    jumpProgress += dt*3.0; 
+    
+    if (jumpProgress >=1.0) {
+        jumpProgress = 0.0;
+    }
+    else if (jumpProgress < 0.0) {
+        jumpProgress = 1.0; 
+    }
+
+    if (0 <= jumpProgress && jumpProgress < 0.5) {
+      leftArm->rotateJump(-armMaxAngle*jumpProgress*2.0); 
+      rightArm->rotateJump(armMaxAngle*jumpProgress*2.0); 
+      leftLeg->rotateJump(-armMaxAngle*jumpProgress*2.0); 
+      rightLeg->rotateJump(armMaxAngle*jumpProgress*2.0); 
+    }
+    else if (0.5 <= jumpProgress && jumpProgress < 1.0) {
+        leftArm -> rotateJump(-armMaxAngle*(1.0-jumpProgress)*2.0);
+        rightArm -> rotateJump(armMaxAngle*(1.0-jumpProgress)*2.0);
+        leftLeg -> rotateJump(-armMaxAngle*(1.0-jumpProgress)*2.0);
+        rightLeg -> rotateJump(armMaxAngle*(1.0-jumpProgress)*2.0);
     }
 
 }

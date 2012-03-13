@@ -101,7 +101,7 @@ void TentObj::DrawTent() {
 
 	glDisable(GL_TEXTURE_2D);
 
-	glColor3f(0.2,0.2,0.8);
+	glColor3f(0.0,0.0,0.0);
 
 	//Back triangle, inside
 	glBegin(GL_TRIANGLES);

@@ -1,7 +1,7 @@
 /*
- * Ground.h: Header file for a class that draws the ground.
+ * Robot.h: Header file for class that controls a blocky robot
  *
- * (c) 2001-2002: Stephen Chenney, University of Wisconsin at Madison.
+ * Charles L. Capps 2012
  */
 #ifndef _ROBOT_H_
 #define _ROBOT_H_
@@ -27,7 +27,7 @@ const double bodyDimDefault[] = {6.0,5.0,8.0};
 const double headDimDefault[] = {3.0,3.0,3.0};
 const double legMaxAngle = 45.0; //Max angle of legs when walking
 const double armMaxAngle = 60.0; //Max angle of arms when walking
-const double headTurnMax = 45.0;
+const double headTurnMax = 45.0; //Max amount to turn head by
 const double bodyTurnMax = 20.0;
 
 const double walkAccel = 20.0; 

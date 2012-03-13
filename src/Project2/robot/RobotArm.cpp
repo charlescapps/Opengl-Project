@@ -70,7 +70,14 @@ void RobotArm::drawRobotArm() {
 }
 
 void RobotArm::rotateWalk(double degrees) {
-   rotateArm[0]=degrees;   
+    rotateArm[0] = rotateArm[2] = rotateArm[3] = 0.0; 
+    rotateArm[1] = 1.0; 
+    rotateArm[0]=degrees;   
 }
 
+void RobotArm::rotateJump(double degrees) {
+    rotateArm[0] = rotateArm[1] = rotateArm[3] = 0.0; 
+    rotateArm[2] = 1.0; 
+    rotateArm[0]=degrees;   
+}
 

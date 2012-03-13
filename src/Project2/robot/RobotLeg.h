@@ -44,6 +44,7 @@ class RobotLeg {
 	void draw();
 
     void rotateWalk(double degrees); 
+    void rotateJump(double degrees); 
 };
 
 

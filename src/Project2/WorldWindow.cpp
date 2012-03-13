@@ -1,9 +1,9 @@
 /*
- * CS559 Maze Project
- *
  * Class file for the WorldWindow class.
  *
  * (c) Stephen Chenney, University of Wisconsin at Madison, 2001-2002
+ *
+ * Modified extensively by Charles L Capps for CS547 at Portland State Univ.
  *
  */
 
@@ -16,7 +16,7 @@
 const double WorldWindow::FOV_X = 45.0;
 
 WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
-	: Fl_Gl_Window(x, y, width, height, label), lookInFrontOfTrainBy(5.0), trainSeatHeight(0.5)
+	: Fl_Gl_Window(x, y, width, height, label), TREE_GRID_SIZE(8), lookInFrontOfTrainBy(200.0), trainSeatHeight(0.5)
 {
 	cameraFollowingTrain = cameraToRight = cameraToLeft = cameraBehindTrain = false; 
     button = -1;
@@ -28,10 +28,16 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
     x_at = 0.0f;
     y_at = 0.0f;
 
-	numTents = 2; 
+	//TentObj(double w, double h, double l, double dx, double dy, double dz, double degrees, double xRotate, double yRotate, double zRotate) {
+	numTents = 6; 
 	someTents = new TentObj*[numTents]; 
-	someTents[0] = new TentObj(5,  7, 8, 30, 10, 0.1, 190, 0,0,1);
-	someTents[1] = new TentObj(10, 4, 12, 25, 30, 0.1, 210, 0,0,1);
+	someTents[0] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+	someTents[1] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+	someTents[2] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+	someTents[3] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+	someTents[4] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+	someTents[5] = new TentObj(randomFloat(5.0,15.0), randomFloat(5.0,30.0), randomFloat(8.0,30.0), randomFloat(-130.0,130.0), randomFloat(-130.0,130.0), 0.1, randomFloat(0.0,360.0), 0,0,1);
+
 
 	numTrees = 5;
 	someTrees = new TreeObj*[numTrees]; 
@@ -41,9 +47,59 @@ WorldWindow::WorldWindow(int x, int y, int width, int height, char *label)
 	someTrees[3] = new TreeObj(1.2, 2, 3, 10, 10, 25, 0, 0, 0, 0, 1, 40, 12, 0.8, 0.8); 
 	someTrees[4] = new TreeObj(0.3, 5, 8, 25, 15, 35, 0, 0, 0, 0, 1, 25, 25, 1.4, 1.2); 
 
+    double X_MIN = -150.0; 
+    double Y_MIN = -150.0; 
+    double X_MAX = 150.0; 
+    double Y_MAX = 150.0; 
+    double X_SPACE = (X_MAX - X_MIN)/(TREE_GRID_SIZE-1); 
+    double Y_SPACE = (Y_MAX - Y_MIN)/(TREE_GRID_SIZE-1); 
+    double cylRdefault = 0.8; 
+    double cylHdefault = 4.0; 
+    double coneRdefault = 6.0; 
+    double coneHdefault = 15.0; 
+    double randDisplace = 10.0; 
+    int coneSlicesDefault = 30; 
+    int coneStacksDefault = 15;
+
+    double X_IGNORE = 40.0; 
+    double Y_IGNORE = 40.0; 
+
+/*	TreeObj(double cylR, double cylH, double coneR, double coneH, 
+		double dx, double dy, double dz, 
+		double degrees, double xRotate, double yRotate, double zRotate, 
+		int coneSlices, int coneStacks, 
+		double ellipse, double overlap):PI(4.0*atan(1.0))*/
+
+    treeGrid = new TreeObj**[TREE_GRID_SIZE];
+    for (int i = 0; i < TREE_GRID_SIZE; i++) {
+        treeGrid[i] = new TreeObj*[TREE_GRID_SIZE]; 
+        for (int j = 0; j < TREE_GRID_SIZE; j++) {
+            double x_loc = X_MIN + i*X_SPACE; 
+            double y_loc =Y_MIN + j*Y_SPACE; 
+            if (x_loc < X_IGNORE && x_loc > -X_IGNORE && 
+                y_loc < Y_IGNORE && y_loc > -Y_IGNORE) {
+                treeGrid[i][j] = NULL; 
+                continue; 
+            }
+            treeGrid[i][j] = new TreeObj(cylRdefault*randomFloat(0.5,3.0), 
+                cylHdefault*randomFloat(0.25,2.0), 
+                coneRdefault*randomFloat(0.25, 3.0), 
+                coneHdefault*randomFloat(0.25, 2.0), 
+                x_loc + randDisplace*randomFloat(-1.0,1.0), 
+                y_loc + randDisplace*randomFloat(-1.0,1.0),
+                0.0, 
+                0,0,0,1.0, 
+                (int)(coneSlicesDefault*randomFloat(0.2, 3.0)), 
+                (int)(coneStacksDefault*randomFloat(0.3, 4.0)),
+                randomFloat(0.7,1.3), 
+                randomFloat(0.0, 0.6) 
+                );
+        }
+    }
+
 	//Mario(double dx, double dy, double dz, double degrees, double xRotate, double yRotate, double zRotate) {
     itsaMario = new ModelFromObj(-20.0,32.0,0.0,90.0,1.0,0.0,0.0, (char*)"models/MarioBros.obj", (char*)"models/mario_fire.tga"); 
-    guacamaya = new ModelFromObj(10.0,5.0,25.0,70.0,1.0,0.0,1.0, (char*)"models/Guacamaya.obj", (char*)"models/Guacamaya.tga", 5.0); 
+    guacamaya = new ModelFromObj(10.0,25.0,30.0,70.0,1.0,0.0,1.0, (char*)"models/Guacamaya.obj", (char*)"models/Guacamaya.tga", 5.0); 
 
     dancingRobot = new Robot; 
 }
@@ -111,6 +167,11 @@ WorldWindow::draw(void)
 		for (int i  = 0; i < numTrees; i++) 
 			someTrees[i]->Initialize(); 
 
+        for (int i = 0; i < TREE_GRID_SIZE; i++) 
+            for (int j = 0; j < TREE_GRID_SIZE; j++) 
+                if (treeGrid[i][j])
+                    treeGrid[i][j] -> Initialize(); 
+
         itsaMario->Initialize(); 
         guacamaya->Initialize(); 
         dancingRobot->Initialize();
@@ -169,6 +230,11 @@ WorldWindow::draw(void)
 
 	for (int i  = 0; i < numTrees; i++) 
 		someTrees[i]->Draw();
+
+    for (int i = 0; i < TREE_GRID_SIZE; i++) 
+        for (int j = 0; j < TREE_GRID_SIZE; j++)
+            if (treeGrid[i][j])
+                treeGrid[i][j] -> Draw(); 
 
     itsaMario->Draw(); 
     guacamaya->Draw(); 
@@ -467,10 +533,10 @@ int WorldWindow::handle(int event)
       //          dancingRobot->incSpeed(-0.4);  
                 return 1; 
             case 'a':
-                dancingRobot->turn(4.0); 
+                dancingRobot->turn(8.0); 
                 return 1; 
             case 'd':
-                dancingRobot->turn(-4.0); 
+                dancingRobot->turn(-8.0); 
                 return 1; 
             case 'q':
                 dancingRobot->turnBody(2.0); 

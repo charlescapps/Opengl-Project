@@ -26,9 +26,11 @@ Ground::~Ground(void)
 bool
 Ground::Initialize(void)
 {
+
+    //setupTexDefault("tex/grass.tga", texture_obj); 
+
     ubyte   *image_data;
     int	    image_height, image_width;
-
     // Load the image for the texture. The texture file has to be in
     // a place where it will be found.
     if ( ! ( image_data = (ubyte*)tga_load("tex/grass.tga", &image_width,
@@ -62,6 +64,8 @@ Ground::Initialize(void)
     // This says what to do with the texture. Modulate will multiply the
     // texture by the underlying color.
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
+
+    delete[] image_data;
 
     // Now do the geometry. Create the display list.
     display_list = glGenLists(1);

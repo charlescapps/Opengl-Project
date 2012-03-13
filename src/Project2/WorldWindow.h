@@ -66,6 +66,9 @@ class WorldWindow : public Fl_Gl_Window {
 	int numTrees; //Draw some trees
 	TreeObj** someTrees; 
 
+    const int TREE_GRID_SIZE; 
+    TreeObj*** treeGrid; 
+
     ModelFromObj* itsaMario; 
     ModelFromObj* guacamaya; 
 

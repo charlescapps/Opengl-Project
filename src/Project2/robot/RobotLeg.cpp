@@ -70,7 +70,15 @@ void RobotLeg::drawRobotLeg() {
 }
 
 void RobotLeg::rotateWalk(double degrees) {
-   rotateLeg[0]=degrees;   
+    rotateLeg[0] = rotateLeg[2] = rotateLeg[3] = 0.0; 
+    rotateLeg[1] = 1.0; 
+    rotateLeg[0]=degrees;   
+}
+
+void RobotLeg::rotateJump(double degrees) {
+    rotateLeg[0] = rotateLeg[1] = rotateLeg[3] = 0.0; 
+    rotateLeg[2] = 1.0; 
+    rotateLeg[0]=degrees;   
 }
 
 

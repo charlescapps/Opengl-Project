@@ -48,8 +48,6 @@ class TreeObj {
 
 	GLUquadric* cylQuad; 
 
-	//not using now. may try later.
-
   public:
     // Constructor. Can't do initialization here because we are
     // created before the OpenGL context is set up.

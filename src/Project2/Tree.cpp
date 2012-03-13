@@ -16,8 +16,7 @@ TreeObj::~TreeObj(void)
     if ( initialized )
     {
         glDeleteLists(display_list, 1);
-      //  gluDeleteQuadratic(cylQuad); 
-	
+        gluDeleteQuadric(cylQuad); 
     }
 }
 
@@ -25,9 +24,6 @@ TreeObj::~TreeObj(void)
 // load the texture.
 
 void TreeObj::ReInit(void) {
-	// Now do the geometry. Create the display list for drawing a tent.
-   // display_list = glGenLists(1);
-//    glNewList(display_list, GL_COMPILE);
 
 	glNewList(display_list, GL_COMPILE);
 	glTranslated(dx,dy,dz);
@@ -47,7 +43,11 @@ void TreeObj::ReInit(void) {
 
 bool TreeObj::Initialize(void)
 {
+    if (initialized)
+        return false; 
+
 	cylQuad = gluNewQuadric(); 
+    //gluQuadricTexture(cylQuad, GLU_TRUE); 
 
     if (!TreeObj::texturesLoaded) {
         setupTexDefault("tex/walnut.tga", TreeObj::wood_tex);
@@ -77,15 +77,16 @@ bool TreeObj::Initialize(void)
 
 void TreeObj::DrawTreeBase() {
 
+//	glColor3f(0.5,0.0,0.3); //White since texture has colors
 	// Turn on texturing and bind the walnut texture for the ground.
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, TreeObj::wood_tex);
-
-	glColor3f(1.0,1.0,1.0); //White since texture has colors
+     glColor3f(0.6,0.2,0.2); 
+//	 glEnable(GL_TEXTURE_2D);
+//	 glBindTexture(GL_TEXTURE_2D, TreeObj::wood_tex);
 
 	gluCylinder(cylQuad, cylR, cylR, cylH, cylSlices, cylStacks); 
 
-	glDisable(GL_TEXTURE_2D);
+//	glDisable(GL_TEXTURE_2D);
+
 }
 
 void TreeObj::DrawTreeTop() {
@@ -95,7 +96,7 @@ void TreeObj::DrawTreeTop() {
 	float texCoordsX[3] = {0.5 - (texW/2.0), 0.5 + (texW/2.0), 0.5 };
 	float texCoordsY[3] = {0.0, 0.0, texH};
 
-	glColor3f(0.0,1.0,0.0); 
+	glColor3f(0.4,1.0,0.4); 
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, leaf_tex);
@@ -140,9 +141,9 @@ void TreeObj::DrawTreeTop() {
 		}
 	}
 
-    glDisable(GL_TEXTURE_2D); 
 
 	glEnd();
+    glDisable(GL_TEXTURE_2D); 
 }
 
 void TreeObj::DrawTreeTopNoEffects() {
