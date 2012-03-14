@@ -44,16 +44,17 @@ class WorldWindow : public Fl_Gl_Window {
 	// the last time this method was called.
 	bool	Update(float);
 
-	float* getTrainViewLookAt(); //Gets 9 floats for gluLookAt parameters, viewpoint of train.
-	float* getBehindTrainViewLookAt();
-    float* getRightViewLookAt(); //Get the eye coordinates, center point, and up vector
-    float* getLeftViewLookAt();  //Get the eye coordinates, center point, and up vector
+	void getTrainViewLookAt(float* eye); //Gets 9 floats for gluLookAt parameters, viewpoint of train.
+	void getBehindTrainViewLookAt(float* eye);
+    void getRightViewLookAt(float* eye); //Get the eye coordinates, center point, and up vector
+    void getLeftViewLookAt(float* eye);  //Get the eye coordinates, center point, and up vector
 
     private:
 	Ground	    ground;	    // The ground object.
 	Track  traintrack;	    // The train and track.
 	const float lookInFrontOfTrainBy; //Distance from train (eye) to center for gluLookAt
 	const float trainSeatHeight; //Offset eye in the z-direction. 
+    float rollerCoasterEye[9]; //9 is the no. of parameters gluLookAt takes
 
 	bool cameraFollowingTrain; 
 	bool cameraBehindTrain; 

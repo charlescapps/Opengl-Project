@@ -193,24 +193,20 @@ WorldWindow::draw(void)
     glLoadIdentity();
 
 	if (cameraFollowingTrain) {
-		float* lookAtParams = getTrainViewLookAt(); 
-		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
-		delete[] lookAtParams; 
+	    getTrainViewLookAt(rollerCoasterEye); 
+		gluLookAt(rollerCoasterEye[0], rollerCoasterEye[1], rollerCoasterEye[2], rollerCoasterEye[3], rollerCoasterEye[4], rollerCoasterEye[5], rollerCoasterEye[6], rollerCoasterEye[7], rollerCoasterEye[8]);
 	}	
 	else if (cameraBehindTrain) {
-		float* lookAtParams = getBehindTrainViewLookAt(); 
-		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
-		delete[] lookAtParams; 
+		getBehindTrainViewLookAt(rollerCoasterEye); 
+		gluLookAt(rollerCoasterEye[0], rollerCoasterEye[1], rollerCoasterEye[2], rollerCoasterEye[3], rollerCoasterEye[4], rollerCoasterEye[5], rollerCoasterEye[6], rollerCoasterEye[7], rollerCoasterEye[8]);
 	}
     else if (cameraToRight) {
-		float* lookAtParams = getRightViewLookAt(); 
-		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
-		delete[] lookAtParams; 
+		getRightViewLookAt(rollerCoasterEye); 
+		gluLookAt(rollerCoasterEye[0], rollerCoasterEye[1], rollerCoasterEye[2], rollerCoasterEye[3], rollerCoasterEye[4], rollerCoasterEye[5], rollerCoasterEye[6], rollerCoasterEye[7], rollerCoasterEye[8]);
     }
     else if (cameraToLeft) {
-		float* lookAtParams = getLeftViewLookAt(); 
-		gluLookAt(lookAtParams[0], lookAtParams[1], lookAtParams[2], lookAtParams[3], lookAtParams[4], lookAtParams[5], lookAtParams[6], lookAtParams[7], lookAtParams[8]);
-		delete[] lookAtParams; 
+		getLeftViewLookAt(rollerCoasterEye); 
+		gluLookAt(rollerCoasterEye[0], rollerCoasterEye[1], rollerCoasterEye[2], rollerCoasterEye[3], rollerCoasterEye[4], rollerCoasterEye[5], rollerCoasterEye[6], rollerCoasterEye[7], rollerCoasterEye[8]);
     }
 	else {
 		gluLookAt(eye[0], eye[1], eye[2], x_at, y_at, 2.0, 0.0, 0.0, 1.0);
@@ -242,15 +238,13 @@ WorldWindow::draw(void)
 }
 
 //Use derivative and train position to get train's point of view
-float* WorldWindow::getTrainViewLookAt() { //Get the eye coordinates, center point, and up vector
+void WorldWindow::getTrainViewLookAt(float* lookAtParams) { //Get the eye coordinates, center point, and up vector
 	float posn = traintrack.getPosn(); 
-	float* derivative = new float[3]; 
-	float* trainPosn = new float[3]; 
+	float derivative[3]; 
+	float trainPosn[3]; 
 	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
 	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
 	Normalize_3(derivative); 
-
-	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
 
 	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
 
@@ -261,25 +255,20 @@ float* WorldWindow::getTrainViewLookAt() { //Get the eye coordinates, center poi
 
 	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
 	lookAtParams[7] = lookAtParams[6] = 0.0;
-	delete[] derivative;
-	delete[] trainPosn; 
-	return lookAtParams;
 }
 
 //Use derivative and train position to get train's point of view
-float* WorldWindow::getLeftViewLookAt() { //Get the eye coordinates, center point, and up vector
+void WorldWindow::getLeftViewLookAt(float* lookAtParams) { //Get the eye coordinates, center point, and up vector
 	float posn = traintrack.getPosn(); 
-	float* derivative = new float[3]; 
-	float* trainPosn = new float[3]; 
+	float derivative[3]; 
+	float trainPosn[3]; 
 	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
 	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
 	Normalize_3(derivative); 
 
-	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
-
 	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
-    float* leftDir = new float[3];
-    float* up = new float[3]; 
+    float leftDir[3];
+    float up[3]; 
     up[0] =up[1]= 0.0;
     up[2] = 1.0; 
 
@@ -292,26 +281,19 @@ float* WorldWindow::getLeftViewLookAt() { //Get the eye coordinates, center poin
 
 	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
 	lookAtParams[7] = lookAtParams[6] = 0.0;
-	delete[] derivative;
-	delete[] trainPosn; 
-    delete[] leftDir; 
-    delete[] up; 
-	return lookAtParams;
 }
 //Use derivative and train position to get train's point of view
-float* WorldWindow::getRightViewLookAt() { //Get the eye coordinates, center point, and up vector
+void WorldWindow::getRightViewLookAt(float* lookAtParams) { //Get the eye coordinates, center point, and up vector
 	float posn = traintrack.getPosn(); 
-	float* derivative = new float[3]; 
-	float* trainPosn = new float[3]; 
+	float derivative[3]; 
+	float trainPosn[3]; 
 	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
 	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
 	Normalize_3(derivative); 
 
-	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
-
 	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
-    float* rightDir = new float[3];
-    float* up = new float[3]; 
+    float rightDir[3];
+    float up[3]; 
     up[0] =up[1]= 0.0;
     up[2] = 1.0; 
 
@@ -324,22 +306,15 @@ float* WorldWindow::getRightViewLookAt() { //Get the eye coordinates, center poi
 
 	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
 	lookAtParams[7] = lookAtParams[6] = 0.0;
-	delete[] derivative;
-	delete[] trainPosn; 
-    delete[] rightDir; 
-    delete[] up; 
-	return lookAtParams;
 }
 
-float* WorldWindow::getBehindTrainViewLookAt() { //Get the eye coordinates, center point, and up vector
+void WorldWindow::getBehindTrainViewLookAt(float* lookAtParams) { //Get the eye coordinates, center point, and up vector
 	float posn = traintrack.getPosn(); 
-	float* derivative = new float[3]; 
-	float* trainPosn = new float[3]; 
+	float derivative[3]; //I think it's best to allocate these on the stack since malloc is expensive as heck
+	float trainPosn[3]; 
 	traintrack.getSpline()->Evaluate_Derivative(posn, derivative);
 	traintrack.getSpline()->Evaluate_Point(posn,trainPosn); 
 	Normalize_3(derivative); 
-
-	float* lookAtParams = new float[9]; //eye coords, center coords, up vector 
 
 	trainPosn[2] += trainSeatHeight; //Add some value to z so the eye is above train, not in center of it. 
 
@@ -350,9 +325,6 @@ float* WorldWindow::getBehindTrainViewLookAt() { //Get the eye coordinates, cent
 
 	lookAtParams[8] = 1.0; //Camera orientation is upwards. Would need more general function if the train could wind around the track. 
 	lookAtParams[7] = lookAtParams[6] = 0.0;
-	delete[] derivative;
-	delete[] trainPosn; 
-	return lookAtParams;
 }
 
 
