@@ -22,12 +22,12 @@ w/s         : Move robot forward / backward
 a/d         : Turn robot left / right
 SPACE       : Jump robot!
 
+Hold left mouse button and drag to rotate view. 
+Hold right mouse button and drag to change height.
+Hold both buttons and drag to zoom in/ out. 
+
 Special thanks to kixor for use of obj parser code: 
 http://www.kixor.net/dev/objloader/
 
-Your obj parser seg faults for 2D texture coordinates when strtok returns a 
+Your obj parser seg faults for 2D texture coordinates, because strtok returns a 
 NULL value the 3rd time it's called:-) Easy to fix. 
-
-Ironically, now that I understand how the file format is I could have easily 
-written a parser. 
-    Still learning about materials, though, not sure what mtl files do. 
