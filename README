@@ -1,4 +1,14 @@
-Htkeys: 
+Dependencies: 
+
+libfltk-dev
+libglu1-mesa-dev
+libgl1-mesa-dev
+
+possibly something I'm missing?
+
+If you have all the required packages, make should succeed.
+
+Hotkeys: 
 
 F1 - see from train's POV
 F2 - see from train looking backwards
