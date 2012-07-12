@@ -4,8 +4,6 @@ libfltk-dev
 libglu1-mesa-dev
 libgl1-mesa-dev
 
-possibly something I'm missing?
-
 If you have all the required packages, make should succeed.
 
 Hotkeys: 
@@ -21,9 +19,10 @@ PgUp/PgDown : Increase / Decrease number of slices in trees
 w/s         : Move robot forward / backward
 a/d         : Turn robot left / right
 SPACE       : Jump robot!
+Up/Down     : Accelerate / Deccelerate roller coaster
 
 Hold left mouse button and drag to rotate view. 
-Hold right mouse button and drag to change height.
+Hold right mouse button and drag to move in the plane of the camera.
 Hold both buttons and drag to zoom in/ out. 
 
 Special thanks to kixor for use of obj parser code: 
